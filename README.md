@@ -2,12 +2,16 @@
 Example project to patch the Java Double implementation in order to optimize string parsing with the FastDoubleParser
 
 ### Challenges
-* Packaging the compiled patch module into a .jar to then supply to `--patch-module` at runtime
+* ~~Packaging the compiled patch module into a .jar to then supply to `--patch-module` at runtime~~
 
 ## How to compile and use
 ### Compiling the patched java.base module
 ```bash
 javac --patch-module java.base=src -d target/java.base -cp src/  src/java/lang/Double.java
+```
+### Build patch module .jar
+```bash
+jar cvf  java.base.jar -C target/java.base .
 ```
 ### Compile example program
 ```bash
@@ -15,7 +19,9 @@ javac -d "example.program/target" example.program/src/example/sql/Main.java
 ```
 ### Run example program with the patch
 ```bash
-java --patch-module java.base=target/java.base -cp postgresql-x.x.x.jar:example.program/target/ example.sql.Main 
+java --patch-module java.base=target/java.base -cp postgresql-x.x.x.jar:example.program/target/ example.sql.Main
+or
+java --patch-module java.base=java.base.jar -cp postgresql-x.x.x.jar:example.program/target/ example.sql.Main
 ```
 ## Patches made to Double.java
 ```java
@@ -58,11 +64,11 @@ long valueOfHexLiteral(
 
 ## Attempting to patch with a .jar 
 ```bash
-jar cf java.base.jar target
+❯ jar cvf java.base.jar -C target/java.base .
 ```
 ```bash
 ❯ java --patch-module java.base=java.base.jar -verbose:class --list-modules | grep Double
-[0.009s][info][class,load] java.lang.Double source: jrt:/java.base
+[0.011s][info][class,load] java.lang.Double source: java.base.jar
 ```
 ```bash
 ❯ java --patch-module java.base=target/java.base -verbose:class --list-modules | grep Double
