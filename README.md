@@ -17,6 +17,22 @@ javac -d "example.program/target" example.program/src/example/sql/Main.java
 ```bash
 java --patch-module java.base=target/java.base -cp postgresql-x.x.x.jar:example.program/target/ example.sql.Main 
 ```
+## Patches made to Double.java
+```java
+public static boolean USE_FAST_PARSER = true;
+
+public static void goFast(boolean b)
+{
+    USE_FAST_PARSER = b;
+}
+
+public static double parseDouble(String s) throws NumberFormatException {
+    if (USE_FAST_PARSER)
+        return FastDoubleParser.parseDouble(s);
+    return FloatingDecimal.parseDouble(s);
+}
+```
+
 ## Project Tree
 ```
 ├── READEME.md
