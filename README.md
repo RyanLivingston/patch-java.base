@@ -56,6 +56,19 @@ long valueOfHexLiteral(
 }
 ```
 
+## Attempting to patch with a .jar 
+```bash
+jar cf java.base.jar target
+```
+```bash
+❯ java --patch-module java.base=java.base.jar -verbose:class --list-modules | grep Double
+[0.009s][info][class,load] java.lang.Double source: jrt:/java.base
+```
+```bash
+❯ java --patch-module java.base=target/java.base -verbose:class --list-modules | grep Double
+[0.011s][info][class,load] java.lang.Double source: target/java.base
+```
+
 ## Project Tree
 ```
 ├── READEME.md
