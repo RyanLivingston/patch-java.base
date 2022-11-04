@@ -11,6 +11,12 @@ package ch.randelshofer.fastdoubleparser;
  */
 public class FastDoubleParser {
 
+    static private final String ENABLE_ENV = System.getenv("JAVA_FAST_DOUBLE_PARSER");
+
+    public static boolean isFast()
+    {
+        return ENABLE_ENV != null;
+    }
 
     /**
      * Don't let anyone instantiate this class.

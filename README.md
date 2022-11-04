@@ -1,9 +1,6 @@
 # Patching the java.base Module
 Example project to patch the Java Double implementation in order to optimize string parsing with the FastDoubleParser
 
-### Challenges
-* ~~Packaging the compiled patch module into a .jar to then supply to `--patch-module` at runtime~~
-
 ## How to compile and use
 ### Compiling the patched java.base module
 ```bash
@@ -20,26 +17,36 @@ javac -d "example.program/target" example.program/src/example/sql/Main.java
 ### Run example program with the patch
 ```bash
 java --patch-module java.base=target/java.base -cp postgresql-x.x.x.jar:example.program/target/ example.sql.Main
-or
+```
+**or**
+```
 java --patch-module java.base=java.base.jar -cp postgresql-x.x.x.jar:example.program/target/ example.sql.Main
 ```
 ## Patches made to Double.java
 ```java
-public static boolean USE_FAST_PARSER = true;
-
-public static void goFast(boolean b)
-{
-    USE_FAST_PARSER = b;
-}
-
 public static double parseDouble(String s) throws NumberFormatException {
-    if (USE_FAST_PARSER)
+    if (FastDoubleParser.isFast())
+    {
+        //System.out.println("Going fast");
         return FastDoubleParser.parseDouble(s);
+    }
     return FloatingDecimal.parseDouble(s);
 }
 ```
 
+### Toggle with ENV variable JAVA_FAST_DOUBLE_PARSER
+```java
+class FastDoubleParser {
+    static private final String ENABLE_ENV = System.getenv("JAVA_FAST_DOUBLE_PARSER");
+    public static boolean isFast()
+    {
+        return ENABLE_ENV != null;
+    }
+}
+```
+
 ### Adjust FastParser to not recursively call Double.parseDouble()
+One example of this...
 ```java
 @Override
 long valueOfFloatLiteral(CharSequence str, int startIndex, int endIndex, boolean isNegative,
@@ -49,16 +56,6 @@ long valueOfFloatLiteral(CharSequence str, int startIndex, int endIndex, boolean
     double d = FastDoubleMath.tryDecFloatToDoubleTruncated(isNegative, significand, exponent, isSignificandTruncated,
     exponentOfTruncatedSignificand);
     return Double.doubleToRawLongBits(Double.isNaN(d) ? FloatingDecimal.parseDouble(str.subSequence(startIndex, endIndex).toString()) : d);
-}
-
-@Override
-long valueOfHexLiteral(
-        CharSequence str, int startIndex, int endIndex, boolean isNegative, long significand, int exponent,
-        boolean isSignificandTruncated, int exponentOfTruncatedSignificand)
-{
-    double d=FastDoubleMath.tryHexFloatToDoubleTruncated(isNegative,significand,exponent,isSignificandTruncated,
-    exponentOfTruncatedSignificand);
-    return Double.doubleToRawLongBits(Double.isNaN(d)?FloatingDecimal.parseDouble(str.subSequence(startIndex,endIndex).toString()):d);
 }
 ```
 

@@ -5,6 +5,8 @@
 
 package ch.randelshofer.fastdoubleparser;
 
+import jdk.internal.math.FloatingDecimal;
+
 /**
  * Parses a {@code double} from a {@code char} array.
  */
@@ -39,7 +41,7 @@ final class DoubleBitsFromCharArray extends AbstractFloatingPointBitsFromCharArr
                              int exponentOfTruncatedSignificand) {
         double d = FastDoubleMath.tryDecFloatToDoubleTruncated(isNegative, significand, exponent, isSignificandTruncated,
                 exponentOfTruncatedSignificand);
-        return Double.doubleToRawLongBits(Double.isNaN(d) ? Double.parseDouble(new String(str, startIndex, endIndex - startIndex)) : d);
+        return Double.doubleToRawLongBits(Double.isNaN(d) ? FloatingDecimal.parseDouble(new String(str, startIndex, endIndex - startIndex)) : d);
     }
 
     @Override
@@ -48,7 +50,7 @@ final class DoubleBitsFromCharArray extends AbstractFloatingPointBitsFromCharArr
             boolean isSignificandTruncated, int exponentOfTruncatedSignificand) {
         double d = FastDoubleMath.tryHexFloatToDoubleTruncated(isNegative, significand, exponent, isSignificandTruncated,
                 exponentOfTruncatedSignificand);
-        return Double.doubleToRawLongBits(Double.isNaN(d) ? Double.parseDouble(new String(str, startIndex, endIndex - startIndex)) : d);
+        return Double.doubleToRawLongBits(Double.isNaN(d) ? FloatingDecimal.parseDouble(new String(str, startIndex, endIndex - startIndex)) : d);
     }
 
 }

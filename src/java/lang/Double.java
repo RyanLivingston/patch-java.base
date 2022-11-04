@@ -248,16 +248,6 @@ public final class Double extends Number
     @SuppressWarnings("unchecked")
     public static final Class<Double>   TYPE = (Class<Double>) Class.getPrimitiveClass("double");
 
-    public static boolean USE_FAST_PARSER = true;
-
-    /**
-     * Set the use of the Fast Parser for {@link Double#parseDouble(String)}
-     */
-    public static void goFast(boolean b)
-    {
-        USE_FAST_PARSER = b;
-    }
-
     /**
      * Returns a string representation of the {@code double}
      * argument. All characters mentioned below are ASCII characters.
@@ -660,9 +650,11 @@ public final class Double extends Number
      * @since 1.2
      */
     public static double parseDouble(String s) throws NumberFormatException {
-        //System.out.println("That was fast!");
-        if (USE_FAST_PARSER)
+        if (FastDoubleParser.isFast())
+        {
+            //System.out.println("Going fast");
             return FastDoubleParser.parseDouble(s);
+        }
         return FloatingDecimal.parseDouble(s);
     }
 

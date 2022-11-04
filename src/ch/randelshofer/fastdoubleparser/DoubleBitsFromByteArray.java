@@ -5,6 +5,8 @@
 
 package ch.randelshofer.fastdoubleparser;
 
+import jdk.internal.math.FloatingDecimal;
+
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -41,7 +43,7 @@ final class DoubleBitsFromByteArray extends AbstractFloatingPointBitsFromByteArr
                              int exponentOfTruncatedSignificand) {
         double d = FastDoubleMath.tryDecFloatToDoubleTruncated(isNegative, significand, exponent, isSignificandTruncated,
                 exponentOfTruncatedSignificand);
-        return Double.doubleToRawLongBits(Double.isNaN(d) ? Double.parseDouble(new String(str, startIndex, endIndex - startIndex, StandardCharsets.ISO_8859_1)) : d);
+        return Double.doubleToRawLongBits(Double.isNaN(d) ? FloatingDecimal.parseDouble(new String(str, startIndex, endIndex - startIndex, StandardCharsets.ISO_8859_1)) : d);
     }
 
     @Override
@@ -50,7 +52,7 @@ final class DoubleBitsFromByteArray extends AbstractFloatingPointBitsFromByteArr
             boolean isSignificandTruncated, int exponentOfTruncatedSignificand) {
         double d = FastDoubleMath.tryHexFloatToDoubleTruncated(isNegative, significand, exponent, isSignificandTruncated,
                 exponentOfTruncatedSignificand);
-        return Double.doubleToRawLongBits(Double.isNaN(d) ? Double.parseDouble(new String(str, startIndex, endIndex - startIndex, StandardCharsets.ISO_8859_1)) : d);
+        return Double.doubleToRawLongBits(Double.isNaN(d) ? FloatingDecimal.parseDouble(new String(str, startIndex, endIndex - startIndex, StandardCharsets.ISO_8859_1)) : d);
     }
 
 }
